@@ -1,6 +1,7 @@
 import pickle
 import streamlit as st
 import requests
+
 def fetch_poster(movie_id):
     url = "https://api.themoviedb.org/3/movie/{}?api_key=8265bd1679663a7ea12ac168da84d2e8&language=en-US".format(movie_id)
     data = requests.get(url)
@@ -16,7 +17,7 @@ def recommend(movie):
     recommended_movie_posters = []
     for i in distances[1:6]:
         # fetch the movie poster
-        movie_id = movies.iloc[i[0]].id
+        movie_id = movies.iloc[i[0]].movie_id
         recommended_movie_posters.append(fetch_poster(movie_id))
         recommended_movie_names.append(movies.iloc[i[0]].title)
 
@@ -24,29 +25,8 @@ def recommend(movie):
 
 
 st.header('Movie Recommender System')
-movies = pickle.load(open('movies_pkl','rb'))
-
-import gzip
-import pickle
-
-# Specify the input and output file paths
-input_file_path = 'comp.pkl.gz'
-output_file_path = 'similarity.pkl'
-
-# Open the compressed .pkl.gz file
-with gzip.open(input_file_path, 'rb') as compressed_file:
-    compressed_data = compressed_file.read()
-
-# Deserialize the compressed data to a Python object (unpickle it)
-uncompressed_data = pickle.loads(compressed_data)
-
-# Save the uncompressed data to a regular .pkl file
-with open(output_file_path, 'wb') as output_file:
-    pickle.dump(uncompressed_data, output_file)
-
-print("File converted from .pkl.gz to .pkl successfully.")
-
-similarity = pickle.load(open('similarity.pkl','rb'))
+movies = pickle.load(open('model/movie_list.pkl','rb'))
+similarity = pickle.load(open('model/similarity.pkl','rb'))
 
 movie_list = movies['title'].values
 selected_movie = st.selectbox(
@@ -56,7 +36,7 @@ selected_movie = st.selectbox(
 
 if st.button('Show Recommendation'):
     recommended_movie_names,recommended_movie_posters = recommend(selected_movie)
-    col1, col2, col3, col4, col5 = st.columns(5)
+    col1, col2, col3, col4, col5 = st.beta_columns(5)
     with col1:
         st.text(recommended_movie_names[0])
         st.image(recommended_movie_posters[0])
@@ -73,7 +53,7 @@ if st.button('Show Recommendation'):
     with col5:
         st.text(recommended_movie_names[4])
         st.image(recommended_movie_posters[4])
-st.text('\n')
-st.text('\n')
-st.text('\n')
-st.text('--------------------------MADE BY CHIDURALA NIKHIL-------------------------')
+
+
+
+
